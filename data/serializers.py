@@ -60,10 +60,12 @@ class MatchSerializer(serializers.ModelSerializer):
 class RoundSerializer(serializers.ModelSerializer):
     league_read = serializers.CharField(source='league.name', read_only=True)
     matches = MatchSerializer(many=True, read_only=True)
+    season_read = serializers.CharField(source='season.year', read_only=True)
 
     class Meta:
         model = RoundM
-        fields = ['id', 'league', 'league_read', 'season', 'round_number', 'name', 'start_date', 'end_date', 'matches']
+        fields = ['id', 'league', 'league_read', 'season', 'season_read',
+                  'round_number', 'name', 'start_date', 'end_date', 'matches']
 
 
 class StandingEntrySerializer(serializers.ModelSerializer):
@@ -80,7 +82,12 @@ class StandingEntrySerializer(serializers.ModelSerializer):
 class StandingSerializer(serializers.ModelSerializer):
     league_read = serializers.CharField(source='league.name', read_only=True)
     table = StandingEntrySerializer(many=True, read_only=True)
+    promotion_number = serializers.IntegerField(source='season.promotion_number', read_only=True)
+    playoffs_number = serializers.IntegerField(source='season.playoffs_number', read_only=True)
+    relegation_number = serializers.IntegerField(source='season.relegation_number', read_only=True)
+
 
     class Meta:
         model = StandingM
-        fields = ['id', 'league', 'league_read', 'season', 'table']
+        fields = ['id', 'league', 'league_read', 'promotion_number', 'playoffs_number',
+                  'relegation_number', 'season', 'table']

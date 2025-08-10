@@ -45,8 +45,8 @@ class MatchViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
     def events(self, request, pk=None):
         match = self.get_object()
         events = match.events.all()
-        serializer = EventSerializer({'events': events})
-        return Response(serializer.data)
+        serializer = EventSerializer(events, many=True)
+        return Response('siema')
 
 
 class StandingViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -102,7 +102,7 @@ class RoundViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
     queryset = RoundM.objects.all()
     serializer_class = RoundSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['league', 'season']
+    filterset_fields = ['league', 'season', 'season__year']
 
 
 class SeasonViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
