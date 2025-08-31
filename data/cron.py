@@ -1,6 +1,6 @@
 from django_cron import CronJobBase, Schedule
 from django.utils import timezone
-from .models import Match
+from .models import MatchM
 
 
 class SetMatchToLiveCronJob(CronJobBase):
@@ -16,7 +16,7 @@ class SetMatchToLiveCronJob(CronJobBase):
 
     def do(self):
         now = timezone.now()
-        matches = Match.objects.filter(status='SCHEDULED', date__lte=now)
+        matches = MatchM.objects.filter(status='SCHEDULED', date__lte=now)
 
         for match in matches:
             match.status = 'LIVE'
@@ -35,7 +35,7 @@ class UpdateStandingsCronJob(CronJobBase):
     code = 'data.update_standings_cron_job'  # Unique identifier for the cron job
 
     def do(self):
-        from api_core.management.commands.update_standings import Command
+        from data.management.commands.update_standings import Command
         command = Command()
         command.handle()
         print("Standings updated successfully.")

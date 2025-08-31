@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w3k7nd%rh^)wj4ta$skbmi4l2b5g5=v=c+n2k#-9+zk+0pj&zm'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-w3k7nd%rh^)wj4ta$skbmi4l2b5g5=v=c+n2k#-9+zk+0pj&zm')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 
 # Application definition
@@ -91,26 +92,20 @@ WSGI_APPLICATION = 'beskidscore.wsgi.application'
 
 CRON_CLASSES = [
     'data.cron.SetMatchToLiveCronJob',
+    'data.cron.UpdateStandingsCronJob',
 ]
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'beskidscore_db',
-        'USER': 'beskidscore_user',
-        'PASSWORD': '2115',
-        'HOST': '100.64.0.1',  # Or '127.0.0.1' or Docker network alias
-        'PORT': '5433',
+        'NAME': os.environ.get('DB_NAME', 'beskidscore_db'),
+        'USER': os.environ.get('DB_USER', 'beskidscore_user'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', '2115'),
+        'HOST': os.environ.get('DB_HOST', 'db'),  # Docker service name
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 

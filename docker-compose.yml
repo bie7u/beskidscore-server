@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: beskidscore_db
+      POSTGRES_USER: beskidscore_user
+      POSTGRES_PASSWORD: beskidscore_pass
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U beskidscore_user -d beskidscore_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  web:
+    build: .
+    command: sh docker-entrypoint-web.sh
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DB_NAME=beskidscore_db
+      - DB_USER=beskidscore_user
+      - DB_PASSWORD=beskidscore_pass
+      - DB_HOST=db
+      - DB_PORT=5432
+      - SECRET_KEY=django-insecure-w3k7nd%rh^)wj4ta$$skbmi4l2b5g5=v=c+n2k#-9+zk+0pj&zm
+    depends_on:
+      db:
+        condition: service_healthy
+
+  cron:
+    build: .
+    command: sh docker-entrypoint-cron.sh
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=True
+      - DB_NAME=beskidscore_db
+      - DB_USER=beskidscore_user
+      - DB_PASSWORD=beskidscore_pass
+      - DB_HOST=db
+      - DB_PORT=5432
+      - SECRET_KEY=django-insecure-w3k7nd%rh^)wj4ta$$skbmi4l2b5g5=v=c+n2k#-9+zk+0pj&zm
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
