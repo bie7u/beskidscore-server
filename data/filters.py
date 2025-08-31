@@ -5,6 +5,7 @@ from data.models import MatchM, LeagueM
 
 
 class MatchFilter(django_filters.FilterSet):
+    date = django_filters.DateFilter(field_name='date', lookup_expr='date')
     team_id = django_filters.NumberFilter(method='filter_team')
 
     class Meta:
